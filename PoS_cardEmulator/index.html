@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client</title>
+</head>
+<body>
+    <h1>Client</h1>
+    <input type="text" id="messageInput" placeholder="Enter your message">
+    <button onclick="sendMessage()">Send Broadcast</button>
+    <ul id="messages"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+function log(msg){
+    const messages = document.getElementById('messages');
+    const li = document.createElement('li');
+    li.textContent = msg;
+    messages.appendChild(li);
+}
+        const socket = io();
+
+    
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            if (message) {
+                socket.emit('broadcast message', message);
+                messageInput.value = '';
+            }
+        }
+
+        socket.on('broadcast message', (msg) => {
+
+            if(msg.type){
+                alert(msg)
+            } else {
+
+                
+            }
+        });
+
+var walletAddress;
+async function connect() {
+  if (window.ethereum) {
+     await window.ethereum.request({ method: "eth_requestAccounts" });
+     window.web3 = new Web3(window.ethereum);
+     const account = web3.eth.accounts;
+     //Get the current MetaMask selected/active wallet
+     walletAddress = account.givenProvider.selectedAddress;
+     $("#walletId").text(`Connected wallet: ${walletAddress}`)
+  
+  } else {
+   console.log("No wallet");
+  }
+}
+
+connect()
+
+async function switchNetwork(chainId){
+    CHAINID = chainId;
+    await window.ethereum.request({
+    method: 'wallet_switchEthereumChain',
+    params: [{ chainId: chainId }], // chainId must be in hexadecimal numbers
+    });
+
+}
+
+        socket.on('setPaymentData', async (msg) => {
+            log(JSON.stringify(msg))
+
+            await switchNetwork(msg.chainId)
+            log("Switched network")
+            log(msg.address)
+            
+            try{
+            await window.ethereum.request({
+                "method": "eth_sendTransaction",
+                "params": [
+                {
+                    to: msg.address,
+                    from: walletAddress,
+                    value: web3.utils.toHex(msg.price),
+                    gasLimit: '0x5028',
+          // Customizable by the user during MetaMask confirmation.
+          maxPriorityFeePerGas: '0x3b9aca00',
+          // Customizable by the user during MetaMask confirmation.
+          maxFeePerGas: '0x2540be400',
+
+                }
+                ],
+                });
+            } catch(e) {
+                console.log(e)
+                log(`Error ${e}`)
+            }
+            
+            log("payment")
+
+
+        })
+    </script>
+</body>
+</html>
