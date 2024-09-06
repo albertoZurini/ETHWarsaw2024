@@ -16,10 +16,23 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
+const messages = document.getElementById('messages');
+
 function log(msg){
-    const messages = document.getElementById('messages');
     const li = document.createElement('li');
     li.textContent = msg;
+    messages.appendChild(li);
+}
+function logUrl(url){
+    const a = document.createElement('a')
+    var linkText = document.createTextNode(url);
+    a.appendChild(linkText);
+    a.title = url;
+    a.href = url;
+    console.log(a)
+
+    const li = document.createElement('li');
+    li.appendChild(a);
     messages.appendChild(li);
 }
         const socket = io();
@@ -70,8 +83,18 @@ async function switchNetwork(chainId){
 
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
         socket.on('setPaymentData', async (msg) => {
             log(JSON.stringify(msg))
+            
+            // Add the network
+            let chainIdDec = parseInt(msg.chainId.split('x')[1], 16)
+            log(chainIdDec)
+            logUrl(`https://chainlist.org/chain/${chainIdDec}`)
 
             await switchNetwork(msg.chainId)
             log("Switched network")
