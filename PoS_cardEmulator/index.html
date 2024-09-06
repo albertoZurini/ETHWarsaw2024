@@ -101,7 +101,7 @@ function sleep(ms) {
             log(msg.address)
             
             try{
-            await window.ethereum.request({
+            let hash = await window.ethereum.request({
                 "method": "eth_sendTransaction",
                 "params": [
                 {
@@ -117,6 +117,12 @@ function sleep(ms) {
                 }
                 ],
                 });
+
+                log(`Hash: ${hash}`)
+
+                socket.emit("transactionHash", {
+                    hash: hash
+                })
             } catch(e) {
                 console.log(e)
                 log(`Error ${e}`)

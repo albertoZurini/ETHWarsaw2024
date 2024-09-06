@@ -71,6 +71,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
+
+  socket.on('transactionHash', (msg) => {
+    console.log('transactionHash', msg.hash)
+    io.emit('transactionHash', msg)
+  })
 });
 
 http.listen(port, () => {

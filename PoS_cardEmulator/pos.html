@@ -10,33 +10,61 @@
     <h1>POS</h1>
     <h1 id="walletId"></h1>
     
-    <button onclick="switchNetwork('0xaa37dc')">Switch to Optimism Sepolia</button>
-    <button onclick="switchNetwork('0xaef3')">Switch to Celo testnet</button>
+    <table border="1">
+        <tr>
+            <td>1: select network</td>
+            <td>2: confirm settings</td>
+        </tr>
+        <tr>
+            <td>
+                <button onclick="switchNetwork('0xaa37dc')">Switch to Optimism Sepolia</button>
+                <button onclick="switchNetwork('0xaef3')">Switch to Celo testnet</button>            
+            </td>
+            <td>
+                <button onclick="sellProduct(10)">Sell product</button>
+            </td>
+        </tr>
+    </table>
 
-    <button onclick="sellProduct(10)">Sell product</button>
+    <div class="nice-ui">
+        <h1 id="transactionStatus"></h1>
+    </div>
+
+    <ul id="messages"></ul>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/socket.io/socket.io.js"></script>
 
  <script>
-        const socket = io();
+function log(msg){
+    const li = document.createElement('li');
+    li.textContent = msg;
+    messages.appendChild(li);
+}
 
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value;
-            if (message) {
-                socket.emit('broadcast message', message);
-                messageInput.value = '';
-            }
-        }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-        socket.on('broadcast message', (msg) => {
-            const messages = document.getElementById('messages');
-            const li = document.createElement('li');
-            li.textContent = msg;
-            messages.appendChild(li);
-        });
+const socket = io();
+
+function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value;
+    if (message) {
+        socket.emit('broadcast message', message);
+        messageInput.value = '';
+    }
+}
+
+socket.on('broadcast message', (msg) => {
+    const messages = document.getElementById('messages');
+    const li = document.createElement('li');
+    li.textContent = msg;
+    messages.appendChild(li);
+});
 
 var walletAddress;
 
@@ -72,6 +100,35 @@ async function sellProduct(price){
         price: price,
         address: walletAddress
     });
+    handleBeforeTransaction()
+}
+
+socket.on('transactionHash', async (msg) => {
+    displayTransactionInfo(msg.hash)
+})
+
+async function displayTransactionInfo(hash){
+    let endpoint = `https://optimism-sepolia.blockscout.com/api/v2/transactions/${hash}`
+    for(let i =0; i<10; i++){
+        let resp = await fetch(endpoint)
+        let trns = await resp.json()
+        log(`Transaction status: ${trns.status}`)
+
+        if(trns.status == "ok"){
+            handleTransactionSuccessful()
+            break
+        }
+        await sleep(2000)
+    }
+}
+//displayTransactionInfo("0x4737498e4f4f3e5e2d1e866732019eb2e3eef667876b859eb1034bdc3edd84ec")
+function handleBeforeTransaction(){
+    $(".nice-ui").css({"background": "yellow"})
+    $("#transactionStatus").text("Transaction pending")
+}
+function handleTransactionSuccessful(){
+    $(".nice-ui").css({"background": "green"})
+    $("#transactionStatus").text("Transaction confirmed")
 }
     </script>
 </body>
