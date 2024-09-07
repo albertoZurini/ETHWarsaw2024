@@ -1,5 +1,5 @@
 {
-  "name": "nodejs",
+  "name": "scammable",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@taptrack/ndef": "^1.0.3",
-    "ethers": "^6.13.2",
     "express": "^4.19.2",
     "nfc-pcsc": "^0.8.1",
-    "nfccard-tool": "^0.1.1",
-    "node-postgres": "^0.6.2",
-    "pg": "^8.12.0",
-    "socket.io": "^4.7.5",
-    "viem": "^2.21.3",
-    "wagmi": "^2.12.8"
+    "socket.io": "^4.7.5"
   }
 }

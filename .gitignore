@@ -1,3 +1,6 @@
 PoS_cardEmulator/node_modules/
 PoS_cardEmulator/conf.js
 PoS_cardEmulator/zkverify/submit_to_zkv/node_modules
+PoS_smartContract/scammable/node_modules
+PoS_smartContract/scammable/keys.js
+PoS_cardEmulator/keys.js

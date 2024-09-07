@@ -4,6 +4,8 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const {KEY2} = require("./keys.js")
+const {ethers, JsonRpcProvider, Wallet, Contract} = require('ethers');
 
 // dbforest
 const {postgresString} = require("./conf.js")
@@ -12,6 +14,14 @@ const { setuid } = require('process');
 const client = new pg.Client({
   connectionString: postgresString
 })
+
+const CONTRACT_ADDRESSES = {
+  optimism: {
+    address: "0xC55b5150A39BB5C544C73e8eF34879ACf7d82a41",
+    rpcUrl: "https://sepolia.optimism.io",
+    chainId: 11155420
+  }
+}
 
 const DBNAME = "POS";
 async function setUpPG(){
@@ -128,16 +138,64 @@ async function deletePOSTable() {
 }
 
 
-
+function getAddress(uid){
+  if(uid == "a632cb56"){
+      return ["0x7A8E79dE63c29c3ee2375Cd3D2e90FEaA5aAf322", "0x97324859b73833dC6ACAFd216B1DB57EfDac9Fb7"]
+  } else {
+      return ["0x97324859b73833dC6ACAFd216B1DB57EfDac9Fb7", "0x7A8E79dE63c29c3ee2375Cd3D2e90FEaA5aAf322"]
+  }
+}
 
 const nfc = new NFC();
 
-nfc.on('reader', reader => {
+nfc.on('reader', async reader => {
     console.log(`${reader.reader.name} device attached`);
 
 	reader.on('card', async card => {
+    // process payment with card
 		console.log(`Card detected`, card);
-		//console.log(card.uid)
+
+    [addressFrom, addressTo] = getAddress(card.uid)
+
+    console.log("FROM", addressFrom)
+		
+    let chainDetails;
+    if(CHAINID == "0xaa37dc"){
+      chainDetails = CONTRACT_ADDRESSES.optimism
+    }
+    // Create a provider
+    const provider = new JsonRpcProvider(chainDetails.rpcUrl);
+
+    // Create a signer
+    const signer = new Wallet(KEY2, provider);
+
+    // Create a contract instance
+    const contract = new Contract(chainDetails.address, ABI, signer);
+
+    const balance = await provider.getBalance(addressFrom);
+    console.log("==== BALANCE", balance)
+
+
+    try {
+      const gasEstimate = await contract.transfer.estimateGas(addressFrom, addressTo, PRICE);
+
+        // Call the transfer function
+        const tx = await contract.transfer(addressFrom, addressTo, PRICE, {
+            gasLimit: BigInt(1e6), // Add 20% buffer to gas estimate
+        });
+        console.log('Transaction sent:', tx.hash);
+
+        io.emit('transactionHash', {
+          hash: tx.hash
+        })
+
+        // Wait for the transaction to be mined
+        const receipt = await tx.wait();
+        console.log('Transaction confirmed in block:', receipt.blockNumber);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    
         
     });
 
@@ -180,7 +238,7 @@ app.get('/pos', (req, res) => {
 	res.sendFile(__dirname + '/pos/index.html');
 });
 */
-var CHAINID, PRICE, ADDRESS, NAME, TOKEN, TRANSACTIONHASH;
+var CHAINID = "0xaa37dc", PRICE = 1, ADDRESS, NAME, TOKEN, TRANSACTIONHASH;
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -223,3 +281,181 @@ io.on('connection', (socket) => {
 http.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+const ABI = [
+	{
+		"inputs": [],
+		"name": "completeWithdrawal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "requestWithdrawal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "WithdrawalCompleted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "WithdrawalRequested",
+		"type": "event"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balances",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "pendingWithdrawals",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "withdrawalTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+			
+
