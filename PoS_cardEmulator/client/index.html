@@ -16,6 +16,43 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
+        const module = {}
+    </script>
+<script type="module">
+// ENS PART
+import { createPublicClient, http } from 'https://cdn.jsdelivr.net/npm/viem@2.21.3/+esm'
+import { sepolia } from 'https://cdn.jsdelivr.net/npm/viem@2.21.3/chains/+esm';
+import { normalize } from 'https://cdn.jsdelivr.net/npm/viem@2.21.3/ens/+esm';
+
+async function getEnsName(address){
+    const client = createPublicClient({
+      chain: sepolia,
+      transport: http(
+        'https://eth.llamarpc.com'
+      ),
+    });
+
+    const fetchedEnsName = await client.getEnsName({
+        address,
+    })
+
+      const description = await client.getEnsText({
+        name: fetchedEnsName,
+        key: 'description',
+      });
+
+      const avatar = await client.getEnsText({
+        name: fetchedEnsName,
+        key: 'avatar',
+      });
+
+      return {fetchedEnsName, description, avatar}
+}
+module.getEnsName = getEnsName
+</script>
+
+<script>
+
 const messages = document.getElementById('messages');
 
 function log(msg){
@@ -108,7 +145,18 @@ function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
             await switchNetwork(msg.chainId)
             log("Switched network")
             log(JSON.stringify(msg))
-            // alert("ciao") // TODO: put ENS here
+            if(msg.chainId == '0xaa36a7'){
+                // Ethereum sepolia
+                log("ETH sepolia")
+                try{
+                    let {fetchedEnsName, description, avatar} = module.getEnsName(msg.address)
+                    alert(`Resolved ENS: ${fetchedEnsName}`)
+                }catch(e){
+                    log(`Error: ${e.toString()}`)
+                    socket.emit('log', e)
+                }
+            }
+            
             
             // check if msg.token is cUSD
             if(msg.token){
@@ -139,6 +187,7 @@ function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
                     })
                 } catch(e) {
                     console.log(e)
+                    socket.emit('log', e)
                     log(`Error ${e}`)
                 }
 
@@ -168,6 +217,7 @@ function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
                         hash: hash
                     })
                 } catch(e) {
+                    socket.emit('log', e)
                     console.log(e)
                     log(`Error ${e}`)
                 }

@@ -28,7 +28,8 @@
 FROM ubuntu:24.04
 RUN apt-get update; apt-get upgrade -y
 RUN apt-get install -y build-essential cmake git doxygen graphviz curl libc-dev clang
-RUN curl https://sh.rustup.rs -sSf | sh
-RUN . ~/.cargo/env
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+
 
 CMD ["/usr/bin/bash"]

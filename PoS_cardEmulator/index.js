@@ -45,13 +45,16 @@ nfc.on('error', err => {
 
 const port = 3001;
 
+app.use('/client', express.static('client'))
+app.use('/pos', express.static('pos'))
+/*
 app.get('/client', (req, res) => {
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/client/index.html');
 });
 app.get('/pos', (req, res) => {
-	res.sendFile(__dirname + '/pos.html');
+	res.sendFile(__dirname + '/pos/index.html');
 });
-
+*/
 var CHAINID, PRICE, ADDRESS, NAME, TOKEN;
 
 io.on('connection', (socket) => {
@@ -83,6 +86,10 @@ io.on('connection', (socket) => {
   socket.on('transactionSuccessful', (msg) => {
     console.log("Transaction successful", msg)
     // TODO: enter here code for dbforest
+  })
+
+  socket.on('log', (msg) => {
+    console.log(msg)
   })
 });
 
