@@ -25,3 +25,10 @@
 # 25  noir-cli verify --key ./pos/target/vk --proof ./pos/target/proof --pubs ./pos/target/out_pubs
 # 26  noir-cli verify --key ./pos/target/vk --proof ./pos/target/proof_out --pubs ./pos/target/out_pubs
 # 27  history
+FROM ubuntu:24.04
+RUN apt-get update; apt-get upgrade -y
+RUN apt-get install -y build-essential cmake git doxygen graphviz curl libc-dev clang
+RUN curl https://sh.rustup.rs -sSf | sh
+RUN . ~/.cargo/env
+
+CMD ["/usr/bin/bash"]

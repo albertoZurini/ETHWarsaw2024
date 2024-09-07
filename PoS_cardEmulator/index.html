@@ -99,6 +99,7 @@ function sleep(ms) {
             await switchNetwork(msg.chainId)
             log("Switched network")
             log(msg.address)
+            alert("ciao")
             
             try{
             let hash = await window.ethereum.request({
