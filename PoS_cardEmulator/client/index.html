@@ -28,7 +28,7 @@ async function getEnsName(address){
     const client = createPublicClient({
       chain: sepolia,
       transport: http(
-        'https://eth.llamarpc.com'
+        'https://rpc2.sepolia.org'
       ),
     });
 
@@ -66,10 +66,17 @@ function logUrl(url){
     a.appendChild(linkText);
     a.title = url;
     a.href = url;
-    console.log(a)
 
     const li = document.createElement('li');
     li.appendChild(a);
+    messages.appendChild(li);
+}
+function logImage(url){
+    const img = document.createElement('img')
+    img.src = url;
+
+    const li = document.createElement('li');
+    li.appendChild(img);
     messages.appendChild(li);
 }
         const socket = io();
@@ -149,8 +156,10 @@ function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
                 // Ethereum sepolia
                 log("ETH sepolia")
                 try{
-                    let {fetchedEnsName, description, avatar} = module.getEnsName(msg.address)
-                    alert(`Resolved ENS: ${fetchedEnsName}`)
+                    let {fetchedEnsName, description, avatar} = await module.getEnsName(msg.address)
+                    alert(`Resolved ENS: ${fetchedEnsName}\nDescription: ${description}`)
+                    log("Gotten avatar:")
+                    logImage(avatar)
                 }catch(e){
                     log(`Error: ${e.toString()}`)
                     socket.emit('log', e)
