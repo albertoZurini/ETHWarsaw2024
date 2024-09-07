@@ -1,14 +1,18 @@
-// Docs: https://noir-lang.org/docs/getting_started/hello_noir/
-// https://docs.zkverify.io/tutorials/submit-proofs/noir-ultraplonk-example
-
-fn main(x: Field, y: pub Field) {
-    assert(x != y);
+// main.nr
+struct Transaction {
+    amount: Field,
+    hash1: Field,
+    hash2: Field,
+    hash3: Field,
+    hash4: Field,
+    hash5: Field,
+    hash6: Field,
+    hash7: Field,
+    hash8: Field,
 }
 
-#[test]
-fn test_main() {
-    main(1, 2);
-
-    // Uncomment to make test fail
-    // main(1, 1);
+fn main(transactions: [Transaction; 2], total: pub Field) {
+    let arr = transactions.map(|a : Transaction| a.amount);
+    let reduced = arr.reduce(|a, b| a + b);
+    assert(total == reduced);
 }

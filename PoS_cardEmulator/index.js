@@ -70,6 +70,8 @@ async function setUpPG(){
     console.error('Error checking or creating table:', err);
   }
 
+  await dumpPOSTable()
+
   //await deletePOSTable()
 /*
   await dumpPOSTable()

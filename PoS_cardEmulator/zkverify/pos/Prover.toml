@@ -1,2 +1,23 @@
-x = "1"
-y = "2"
+total = 15
+
+[[transactions]] # transactions[0]
+amount = 5
+hash1 = 0xe7132d07
+hash2 = 0xaae05ad2
+hash3 = 0xa9986d42
+hash4 = 0xd0495d50
+hash5 = 0x448953ad
+hash6 = 0x8597cc42
+hash7 = 0xeafabb35
+hash8 = 0x73c8827f
+
+[[transactions]] # transactions[1]
+amount = 10
+hash1 = "0x68b25402"
+hash2 = "0x616847ca"
+hash3 = "0x6dccd779"
+hash4 = "0x84c4a6e3"
+hash5 = "0xb49931d7"
+hash6 = "0xcf14ecbc"
+hash7 = "0xdd6a05f0"
+hash8 = "0xecc11ebe"
