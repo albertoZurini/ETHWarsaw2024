@@ -29,6 +29,11 @@
                 <button onclick="sellProduct(5, 'Product two')">Sell product 2</button>
             </td>
         </tr>
+        <tr>
+            <td>
+                <button onclick="generateTaxStatement()">Generate tax statement</button>
+            </td>
+        </tr>
     </table>
 
     <div class="nice-ui">
@@ -150,6 +155,10 @@ function handleTransactionSuccessful(){
     }) // this is used to trigger database save
 
     // TODO: use request network to generate an invoice
+}
+
+function generateTaxStatement(){
+    alert("To do manually with zkVerify")
 }
     </script>
 </body>
