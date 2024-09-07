@@ -87,6 +87,15 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
+    const web3 = new Web3();
+    const TRANSFER_FUNCTION_ABI = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"};
+    return web3.eth.abi.encodeFunctionCall(TRANSFER_FUNCTION_ABI, [
+        tokenRecipientAddress,
+        tokenAmount
+    ]);
+}
+
 
         socket.on('setPaymentData', async (msg) => {
             log(JSON.stringify(msg))
@@ -98,35 +107,70 @@ function sleep(ms) {
 
             await switchNetwork(msg.chainId)
             log("Switched network")
-            log(msg.address)
-            alert("ciao")
+            log(JSON.stringify(msg))
+            // alert("ciao") // TODO: put ENS here
             
-            try{
-            let hash = await window.ethereum.request({
-                "method": "eth_sendTransaction",
-                "params": [
-                {
-                    to: msg.address,
-                    from: walletAddress,
-                    value: web3.utils.toHex(msg.price),
-                    gasLimit: '0x5028',
-          // Customizable by the user during MetaMask confirmation.
-          maxPriorityFeePerGas: '0x3b9aca00',
-          // Customizable by the user during MetaMask confirmation.
-          maxFeePerGas: '0x2540be400',
+            // check if msg.token is cUSD
+            if(msg.token){
+                log("sending cUSD")
 
+                try{
+                let hash = await window.ethereum.request({
+                    "method": "eth_sendTransaction",
+                    "params": [
+                    {
+                        to: msg.address,
+                        from: walletAddress,
+                        gasLimit: '0x5028',
+            // Customizable by the user during MetaMask confirmation.
+            maxPriorityFeePerGas: '0x3b9aca00',
+            // Customizable by the user during MetaMask confirmation.
+            maxFeePerGas: '0x2540be400',
+                        data: getDataFieldValue(msg.token, msg.price)
+                    }
+                    ],
+                    });
+
+                    log(`Hash: ${hash}`)
+
+                    socket.emit("transactionHash", {
+                        hash: hash,
+                        celoToken: true
+                    })
+                } catch(e) {
+                    console.log(e)
+                    log(`Error ${e}`)
                 }
-                ],
-                });
 
-                log(`Hash: ${hash}`)
+            } else {
 
-                socket.emit("transactionHash", {
-                    hash: hash
-                })
-            } catch(e) {
-                console.log(e)
-                log(`Error ${e}`)
+                try{
+                let hash = await window.ethereum.request({
+                    "method": "eth_sendTransaction",
+                    "params": [
+                    {
+                        to: msg.address,
+                        from: walletAddress,
+                        value: web3.utils.toHex(msg.price),
+                        gasLimit: '0x5028',
+            // Customizable by the user during MetaMask confirmation.
+            maxPriorityFeePerGas: '0x3b9aca00',
+            // Customizable by the user during MetaMask confirmation.
+            maxFeePerGas: '0x2540be400',
+
+                    }
+                    ],
+                    });
+
+                    log(`Hash: ${hash}`)
+
+                    socket.emit("transactionHash", {
+                        hash: hash
+                    })
+                } catch(e) {
+                    console.log(e)
+                    log(`Error ${e}`)
+                }
             }
             
             log("payment")

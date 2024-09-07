@@ -28,7 +28,8 @@ nfc.on('reader', reader => {
 		io.emit('setPaymentData', {
 			price: PRICE,
 			chainId: CHAINID,
-			address: ADDRESS
+			address: ADDRESS,
+      token: TOKEN
 		});
     });
 
@@ -51,7 +52,7 @@ app.get('/pos', (req, res) => {
 	res.sendFile(__dirname + '/pos.html');
 });
 
-var CHAINID, PRICE, ADDRESS, NAME;
+var CHAINID, PRICE, ADDRESS, NAME, TOKEN;
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -65,8 +66,9 @@ io.on('connection', (socket) => {
 	CHAINID = msg.chainId;
 	PRICE = msg.price;
 	ADDRESS = msg.address;
-  NAME = msg.name
-	console.log("Set price", CHAINID, PRICE, ADDRESS)
+  NAME = msg.name;
+  TOKEN = msg.token;
+	console.log("Set price", msg)
   })
 
   socket.on('disconnect', () => {
@@ -74,7 +76,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('transactionHash', (msg) => {
-    console.log('transactionHash', msg.hash)
+    console.log('transactionHash', JSON.stringify(msg))
     io.emit('transactionHash', msg)
   })
 

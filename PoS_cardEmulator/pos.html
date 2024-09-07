@@ -18,7 +18,9 @@
         <tr>
             <td>
                 <button onclick="switchNetwork('0xaa37dc')">Switch to Optimism Sepolia</button>
-                <button onclick="switchNetwork('0xaef3')">Switch to Celo testnet</button>            
+                <button onclick="switchNetwork('0xaef3')">Switch to CELO testnet</button>
+                <br/>
+                <button onclick="switchNetwork('0xaef3', '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1')">Switch to CELO cUSD testnet</button>
             </td>
             <td>
                 <button onclick="sellProduct(10, 'Product one')">Sell product 1</button>
@@ -85,14 +87,14 @@ async function connect() {
 
 connect()
 
-var CHAINID;
-async function switchNetwork(chainId){
+var CHAINID, TOKEN;
+async function switchNetwork(chainId, token=null){
     CHAINID = chainId;
     await window.ethereum.request({
     method: 'wallet_switchEthereumChain',
     params: [{ chainId: chainId }], // chainId must be in hexadecimal numbers
     });
-
+    TOKEN = token
 }
 
 async function sellProduct(price, name){
@@ -100,17 +102,25 @@ async function sellProduct(price, name){
         chainId: CHAINID,
         price: price,
         address: walletAddress,
-        name: name
+        name: name,
+        token: TOKEN
     });
     handleBeforeTransaction()
 }
 
 socket.on('transactionHash', async (msg) => {
-    displayTransactionInfo(msg.hash)
+    displayTransactionInfo(msg)
 })
 
-async function displayTransactionInfo(hash){
-    let endpoint = `https://optimism-sepolia.blockscout.com/api/v2/transactions/${hash}`
+async function displayTransactionInfo(msg){
+    let hash = msg.hash;
+    let endpoint
+    if(msg.celoToken){
+        // Do things for cUSD
+        endpoint = `https://celo-alfajores.blockscout.com/api/v2/transactions/${hash}`
+    } else {
+        endpoint = `https://optimism-sepolia.blockscout.com/api/v2/transactions/${hash}`
+    }
     for(let i =0; i<10; i++){
         let resp = await fetch(endpoint)
         let trns = await resp.json()
@@ -119,6 +129,8 @@ async function displayTransactionInfo(hash){
         if(trns.status == "ok"){
             handleTransactionSuccessful()
             break
+        } else {
+            handleBeforeTransaction()
         }
         await sleep(2000)
     }
@@ -132,8 +144,10 @@ function handleTransactionSuccessful(){
     $(".nice-ui").css({"background": "green"})
     $("#transactionStatus").text("Transaction confirmed")
     socket.emit('transactionSuccessful', {
-        
-    })
+
+    }) // this is used to trigger database save
+
+    // TODO: use request network to generate an invoice
 }
     </script>
 </body>
