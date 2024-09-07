@@ -51,7 +51,7 @@ app.get('/pos', (req, res) => {
 	res.sendFile(__dirname + '/pos.html');
 });
 
-var CHAINID, PRICE, ADDRESS;
+var CHAINID, PRICE, ADDRESS, NAME;
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -65,6 +65,7 @@ io.on('connection', (socket) => {
 	CHAINID = msg.chainId;
 	PRICE = msg.price;
 	ADDRESS = msg.address;
+  NAME = msg.name
 	console.log("Set price", CHAINID, PRICE, ADDRESS)
   })
 
@@ -75,6 +76,11 @@ io.on('connection', (socket) => {
   socket.on('transactionHash', (msg) => {
     console.log('transactionHash', msg.hash)
     io.emit('transactionHash', msg)
+  })
+
+  socket.on('transactionSuccessful', (msg) => {
+    console.log("Transaction successful", msg)
+    // TODO: enter here code for dbforest
   })
 });
 

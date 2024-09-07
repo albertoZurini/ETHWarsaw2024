@@ -21,7 +21,8 @@
                 <button onclick="switchNetwork('0xaef3')">Switch to Celo testnet</button>            
             </td>
             <td>
-                <button onclick="sellProduct(10)">Sell product</button>
+                <button onclick="sellProduct(10, 'Product one')">Sell product 1</button>
+                <button onclick="sellProduct(5, 'Product two')">Sell product 2</button>
             </td>
         </tr>
     </table>
@@ -94,11 +95,12 @@ async function switchNetwork(chainId){
 
 }
 
-async function sellProduct(price){
+async function sellProduct(price, name){
     socket.emit('setPrice', {
         chainId: CHAINID,
         price: price,
-        address: walletAddress
+        address: walletAddress,
+        name: name
     });
     handleBeforeTransaction()
 }
@@ -129,6 +131,9 @@ function handleBeforeTransaction(){
 function handleTransactionSuccessful(){
     $(".nice-ui").css({"background": "green"})
     $("#transactionStatus").text("Transaction confirmed")
+    socket.emit('transactionSuccessful', {
+        
+    })
 }
     </script>
 </body>
