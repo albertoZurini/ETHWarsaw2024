@@ -32,6 +32,7 @@ The system supports tax reporting by utilizing **DBForest** to store transaction
   
 - **Invoice Generation**  
   Merchants can generate invoices using **Request Network**.
+  ![request network](./assets/request_network.png)
   
 - **Zero-Knowledge Proofs**  
   zkVerify integration for secure and private transaction reporting.
