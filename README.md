@@ -5,6 +5,8 @@ Supports transactions on **Optimism Sepolia, Ethereum Sepolia, Celo, Celo cUSD, 
 
 ## Overview
 
+![gif example](./assets/payment.gif)
+
 Crypto PoS offers a contactless payment experience using NFC (Near Field Communication) for fast and secure cryptocurrency transactions. Designed for merchants and users alike, it simplifies crypto payments by leveraging NFC tags/cards, providing a seamless and intuitive payment process.
 
 With **Crypto PoS**, you can choose between two main protocols:
