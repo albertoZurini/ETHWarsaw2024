@@ -171,6 +171,17 @@ function getDataFieldValue(tokenRecipientAddress, tokenAmount) {
             if(msg.token){
                 log("sending cUSD")
 
+                socket.emit('log', {
+                        to: msg.address,
+                        from: walletAddress,
+                        gasLimit: '0x5028',
+            // Customizable by the user during MetaMask confirmation.
+            maxPriorityFeePerGas: '0x3b9aca00',
+            // Customizable by the user during MetaMask confirmation.
+            maxFeePerGas: '0x2540be400',
+                        data: getDataFieldValue(msg.token, msg.price)
+                    })
+
                 try{
                 let hash = await window.ethereum.request({
                     "method": "eth_sendTransaction",
