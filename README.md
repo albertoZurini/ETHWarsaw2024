@@ -1,7 +1,3 @@
-Here's a draft of a `README.md` for your Crypto PoS project:
-
----
-
 # Crypto PoS
 
 **Web3-ready Point of Sale system for cryptocurrency transactions using NFC technology.**  
