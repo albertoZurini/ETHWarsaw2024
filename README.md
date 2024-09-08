@@ -77,3 +77,7 @@ Moreover, Crypto PoS aims to simplify tax reporting by using zero-knowledge proo
 ## Video Demo
 
 Check out a live demo of Crypto PoS in action: [YouTube Demo](https://youtu.be/pssMTk7GiSk)
+
+## Devfolio
+
+Check out this project on [Devfolio](https://devfolio.co/projects/cryptopos-9345)
