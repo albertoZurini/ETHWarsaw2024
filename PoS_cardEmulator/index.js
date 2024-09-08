@@ -20,6 +20,16 @@ const CONTRACT_ADDRESSES = {
     address: "0xC55b5150A39BB5C544C73e8eF34879ACf7d82a41",
     rpcUrl: "https://sepolia.optimism.io",
     chainId: 11155420
+  },
+  zircuit: {
+    address: "0x506D428E0414478dadC772891028282831085331",
+    rpcUrl: "http://zircuit1-testnet.p2pify.com	",
+    chainId: 48899, // 0xbf03
+  },
+  celo: {
+    address: "0xb6B86fF60a2EB0CE405bd4d0590Cea7aD4B82b7a",
+    rpcUrl: "https://alfajores-forno.celo-testnet.org	",
+    chainId: 44787 // 0xaef3
   }
 }
 
@@ -162,6 +172,10 @@ nfc.on('reader', async reader => {
     let chainDetails;
     if(CHAINID == "0xaa37dc"){
       chainDetails = CONTRACT_ADDRESSES.optimism
+    } else if(CHAINID == "0xbf03"){
+      chainDetails =CONTRACT_ADDRESSES.zircuit
+    } else {
+      chainDetails = CONTRACT_ADDRESSES.celo
     }
     // Create a provider
     const provider = new JsonRpcProvider(chainDetails.rpcUrl);

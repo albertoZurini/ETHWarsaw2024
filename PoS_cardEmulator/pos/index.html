@@ -5,15 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POS</title>
     <script src="/socket.io/socket.io.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            background: radial-gradient(circle, #444 0%, #222 100%);
+            font-family: arial;
+            color: white
+        }
+
+        .invoice {
+            padding: 20px 20px 20px 50px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,.75);
+            width: 50vw;
+            height: 80vh;
+        }
+        button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 8px 2px;
+    cursor: pointer;
+    border-radius: 8px;  /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    transition: all 0.3s ease; /* Smooth transition on hover */
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+button:active {
+    background-color: #3e8e41; /* Even darker green when pressed */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow on press */
+    transform: translateY(1px); /* Slight press down effect */
+}
+
+    </style>
 </head>
 <body>
     <h1>POS</h1>
     <h1 id="walletId"></h1>
     
-    <table border="1">
+    <table border="1" style="width: 50vw">
         <tr>
-            <td>1: select network</td>
+            <td>1: select network (also for the smart contract)</td>
             <td>2: confirm settings</td>
+            <td>Generate tax statement</td>
         </tr>
         <tr>
             <td>
@@ -23,18 +71,20 @@
                 <button onclick="switchNetwork('0xaef3', '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1')">Switch to CELO cUSD testnet</button>
                 <br/>
                 <button onclick="switchNetwork('0xaa36a7')">Ethereum Sepolia</button>
+                <br/>
+                <button onclick="switchNetwork('0xbf03')">Zircuit</button>
             </td>
             <td>
-                <button onclick="sellProduct(10, 'Product one')">Sell product 1</button>
-                <button onclick="sellProduct(5, 'Product two')">Sell product 2</button>
+                <button onclick="sellProduct(10, 'Product one')">Sell product 1 (price 10)</button>
+                <button onclick="sellProduct(5, 'Product two')">Sell product 2 (price 5)</button>
             </td>
-        </tr>
-        <tr>
             <td>
                 <button onclick="generateTaxStatement()">Generate tax statement</button>
+                <button onclick="generateInvoice()">Generate invoice</button>
             </td>
         </tr>
     </table>
+
 
     <div class="nice-ui">
         <h1 id="transactionStatus"></h1>
@@ -42,21 +92,97 @@
 
     <ul id="messages"></ul>
 
+    <div class="invoice">
+        <iframe 
+        id="invoice"
+        src="http://localhost:3000/create-invoice" 
+        width="100%" 
+        height="100%"></iframe>
+    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/socket.io/socket.io.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.0/jquery-ui.min.js" integrity="sha512-MlEyuwT6VkRXExjj8CdBKNgd+e2H+aYZOCUaCrt9KRk6MlZDOs91V1yK22rwm8aCIsb5Ec1euL8f0g58RKT/Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
  <script>
+    $(document).ready(() => {
+        $(".invoice").draggable()
+    })
+function simulateTyping(element, text, delay = 100) {
+    let i = 0;
+
+    function triggerEvent(eventType) {
+        const event = new Event(eventType, { bubbles: true, cancelable: true });
+        element.dispatchEvent(event);
+    }
+
+    function typeCharacter() {
+
+        // Simulate keydown event
+        triggerEvent('keydown');
+        
+        // Add one character at a time to the input field's value
+        element.value = text;
+
+        // Simulate input event
+        triggerEvent('input');
+
+        // Simulate keyup event
+        triggerEvent('keyup');
+
+    }
+
+    element.value = '';  // Clear any existing text
+    typeCharacter();     // Start the typing simulation
+}
+
+async function generateInvoice(){
+    document.getElementById("invoice").contentWindow.document.querySelector("nav").style="display: none"
+    let cwin = document.getElementById("invoice").contentWindow.document.querySelector("create-invoice-form").shadowRoot;
+
+    cwin.querySelector("div > div > form").style = "display: none"
+    // Set date
+    //$(cwin.querySelector("#dueDate")).val("2024-12-12")
+    simulateTyping(cwin.querySelector("#dueDate"), "2024-12-12")
+    simulateTyping(cwin.querySelector("#payerAddress"), "0x8Ce589721a9e832881c6C03a618687a70207db01")
+
+    //simulateTyping(cwin.querySelector("#payerAddress"), "1")
+    /*.trigger ( {
+            type: 'keypress', keyCode: keyVal, which: keyVal, charCode: keyVal
+        } );
+         */
+
+    $(cwin.querySelector("div > div > form > div.invoice-form-container.svelte-n2b8dc > div.invoice-form-details.svelte-n2b8dc > div.invoice-form-section-container.svelte-n2b8dc > div:nth-child(3) > button")).click()
+    await sleep(200)
+    $(cwin.querySelector("div > div > form > div.invoice-form-container.svelte-n2b8dc > div.invoice-form-details.svelte-n2b8dc > div.invoice-form-section-container.svelte-n2b8dc > div:nth-child(4) > div > ul > li:nth-child(6)")).click()
+    await sleep(100)
+    $(cwin.querySelector("div > div > form > div.invoice-form-container.svelte-n2b8dc > div.invoice-form-details.svelte-n2b8dc > div.invoice-form-section-container.svelte-n2b8dc > div:nth-child(3) > button")).click()
+
+    $(cwin.querySelector("div > div > form > div.invoice-form-container.svelte-n2b8dc > div.invoice-form-details.svelte-n2b8dc > div.invoice-form-section-container.svelte-n2b8dc > div:nth-child(4) > button")).click()
+    await sleep(200)
+    $(cwin.querySelector("div > div > form > div.invoice-form-container.svelte-n2b8dc > div.invoice-form-details.svelte-n2b8dc > div.invoice-form-section-container.svelte-n2b8dc > div:nth-child(5) > div > ul > li:nth-child(4)")).click()
+
+    simulateTyping(cwin.querySelector("#payeeAddress"), "0x7A8E79dE63c29c3ee2375Cd3D2e90FEaA5aAf322")
+
+    simulateTyping(cwin.querySelector("#description-0"), PRODUCT)
+    await sleep(100)
+    simulateTyping(cwin.querySelector("#quantity-0"), 1)
+    await sleep(100)
+    simulateTyping(cwin.querySelector("#unitPrice-0"), PRICE)
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function log(msg){
     const li = document.createElement('li');
     li.textContent = msg;
     messages.appendChild(li);
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 
 const socket = io();
 
@@ -104,7 +230,10 @@ async function switchNetwork(chainId, token=null){
     TOKEN = token
 }
 
+var PRODUCT, PRICE;
 async function sellProduct(price, name){
+    PRODUCT = name
+    PRICE = price
     socket.emit('setPrice', {
         chainId: CHAINID,
         price: price,
@@ -144,11 +273,11 @@ async function displayTransactionInfo(msg){
 }
 //displayTransactionInfo("0x4737498e4f4f3e5e2d1e866732019eb2e3eef667876b859eb1034bdc3edd84ec")
 function handleBeforeTransaction(){
-    $(".nice-ui").css({"background": "yellow"})
+    $(".nice-ui").css({"background": "#8B8000"})
     $("#transactionStatus").text("Transaction pending")
 }
 function handleTransactionSuccessful(){
-    $(".nice-ui").css({"background": "green"})
+    $(".nice-ui").css({"background": "#006400"})
     $("#transactionStatus").text("Transaction confirmed")
     socket.emit('transactionSuccessful', {
 
