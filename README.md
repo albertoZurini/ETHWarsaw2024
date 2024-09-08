@@ -81,3 +81,8 @@ Check out this project on [Devfolio](https://devfolio.co/projects/cryptopos-9345
 ## Team
 
 I did hack solo for this hackathon.
+
+# Next steps
+
+1. Develop a custom Smartcard able to sign a challenge coming from the smart contract. 
+2. Develop a hardware able to take in both contact-less payment types (crypto and FIAT).
