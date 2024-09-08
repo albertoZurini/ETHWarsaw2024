@@ -46,7 +46,7 @@ Moreover, Crypto PoS aims to simplify tax reporting by using zero-knowledge proo
 
 ## Technologies Used
 
-- **Solidity** (for smart contract development)
+- **Solidity** (for smart contract development) [https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_smartContract](https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_smartContract)
 - **Optimism Sepolia, Ethereum Sepolia, Celo Alfajores, Zircuit Testnet** (blockchain networks) [https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/pos/index.html#L67-L80](https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/pos/index.html#L67-L80)
 - **BlockScout API** (for transaction confirmation) [https://github.com/albertoZurini/ETHWarsaw2024/blob/a05d78f0425d14928979257526f691f62b05cdef/PoS_cardEmulator/pos/index.html#L251-L272](https://github.com/albertoZurini/ETHWarsaw2024/blob/a05d78f0425d14928979257526f691f62b05cdef/PoS_cardEmulator/pos/index.html#L251-L272)
 - **DBForest** (for transaction storage) [https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/index.js#L36-L150](https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/index.js#L36-L150)
