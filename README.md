@@ -81,3 +81,7 @@ Check out a live demo of Crypto PoS in action: [YouTube Demo](https://youtu.be/p
 ## Devfolio
 
 Check out this project on [Devfolio](https://devfolio.co/projects/cryptopos-9345)
+
+## Team
+
+I did hack solo for this hackathon.
