@@ -47,13 +47,13 @@ Moreover, Crypto PoS aims to simplify tax reporting by using zero-knowledge proo
 ## Technologies Used
 
 - **Solidity** (for smart contract development)
-- **Optimism Sepolia, Ethereum Sepolia, Celo Alfajores, Zircuit Testnet** (blockchain networks)
+- **Optimism Sepolia, Ethereum Sepolia, Celo Alfajores, Zircuit Testnet** (blockchain networks) [https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/pos/index.html#L67-L80](https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/pos/index.html#L67-L80)
 - **BlockScout API** (for transaction confirmation) [https://github.com/albertoZurini/ETHWarsaw2024/blob/a05d78f0425d14928979257526f691f62b05cdef/PoS_cardEmulator/pos/index.html#L251-L272](https://github.com/albertoZurini/ETHWarsaw2024/blob/a05d78f0425d14928979257526f691f62b05cdef/PoS_cardEmulator/pos/index.html#L251-L272)
-- **DBForest** (for transaction storage)
-- **zkVerify** (for zero-knowledge proofs)
-- **ENS** (for domain name resolution)
-- **Request Network** (for invoice generation)
-- **Docker** (for zkVerify integration)
+- **DBForest** (for transaction storage) [https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/index.js#L36-L150](https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/index.js#L36-L150)
+- **zkVerify** (for zero-knowledge proofs) [https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/zkverify](https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/zkverify)
+- **ENS** (for domain name resolution) [https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/client/index.html#L20-L52](https://github.com/albertoZurini/ETHWarsaw2024/blob/c52d5c77c9836682a95d2a1eae912905b98814d6/PoS_cardEmulator/client/index.html#L20-L52)
+- **Request Network** (for invoice generation) [https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/invoicing/invoicing-template](https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/invoicing/invoicing-template)
+- **Docker** (for zkVerify integration) [https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/zkverify/Docker](https://github.com/albertoZurini/ETHWarsaw2024/tree/master/PoS_cardEmulator/zkverify/Docker)
 
 ## Setup Instructions
 
